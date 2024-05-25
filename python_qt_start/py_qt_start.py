@@ -60,10 +60,60 @@ col_2.addLayout(row_4)
 layout_notes.addLayout(col_1, stretch=2)
 layout_notes.addLayout(col_2, stretch=1)
 notes_win.setLayout(layout_notes)
-
 def save_notes_to_json():
     with open("notes_data.json", "w") as file:
         json.dump(notes, file, indent=4, ensure_ascii=False, sort_keys=True)
+
+def add_note():
+    note_name, ok = QInputDialog.getText(notes_win, "Додати нотатку", "Ім'я нотатаки: ")
+    if ok and note_name != "":
+        note = {
+            'name': note_name,
+            'content': '',
+            'tags': []
+        }
+        notes.append(note)
+        list_notes.addItems(note['name']) 
+        print("Додано нотатку:", note)
+        save_notes_to_json()
+
+def show_note():
+    key = list_notes.selectedItems() [0].text()
+    for note in notes:
+        if note['name'] == key:
+            field_text.setText(note['content'])
+            list_tags.clear()
+            list_tags.addItems(note['tags'])
+
+def save_note():
+    if list_notes.selectedItems():
+        key = list_notes.selectedItems() [0].text()
+        print(key)
+        for note in notes:
+            if not['name'] == key:
+                note['content'] = field_text.toPlainText ()
+                save_notes_to_json()
+                print("Нотатка збереження", note )  
+                break
+    else:
+        print("Необрано нотатки для зберігання")
+
+def del_note():
+    if list_notes.selectedItems():
+        key = list_notes.selectedItems() [0].text()
+        for note in notes:
+            if note['name'] == key:
+                print(note['name'] + '' + key)
+                notes.remove(note)
+                list_notes.takeItem(list_notes.row(list_notes.selectedItems()[0]))
+                print("Нотатка видалена: ", note)
+                save_notes_to_json()
+                break
+    else:
+        print("Необрано нотатки для видалення!")
+
+list_notes.itemClicked.connect(show_note)
+button_note_create.clicked.connect(add_note)
 # Старт застосунку
 notes_win.show()
 
@@ -72,3 +122,4 @@ for note in notes:
     list_notes.addItem(note['name'])
 
 app.exec_()
+
